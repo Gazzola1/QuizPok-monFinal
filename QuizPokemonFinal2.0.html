@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Interativo: Tipos de Pokémon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to bottom, #FF0000 0%, #FFFFFF 50%, #A9A9A9 100%);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        body::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, #FFFFFF 0%, #FFFFFF 40%, #000000 40%, #000000 60%, #A9A9A9 60%, #A9A9A9 100%);
+            border-radius: 50%;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+        header {
+            background-color: rgba(255, 255, 255, 0.95);
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-bottom: 3px solid #FF0000;
+            position: relative;
+            z-index: 1;
+        }
+        header h1 {
+            color: #FF0000;
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            letter-spacing: 1px;
+        }
+        .intro {
+            background-color: rgba(255, 255, 255, 0.98);
+            padding: 30px;
+            border-radius: 50px;
+            margin: 20px;
+            max-width: 600px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            border: 2px solid #FF0000;
+            animation: fadeIn 1s ease-in;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .intro p {
+            font-size: 1.1em;
+            font-weight: 400;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .quiz-container {
+            background-color: rgba(255, 255, 255, 0.98);
+            padding: 30px;
+            border-radius: 50px;
+            max-width: 600px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            border: 2px solid #FF0000;
+            animation: fadeIn 1s ease-in;
+            position: relative;
+            z-index: 1;
+        }
+        .question {
+            margin-bottom: 25px;
+            animation: slideIn 0.5s ease-in;
+        }
+        .question p {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #FF0000;
+            margin-bottom: 15px;
+        }
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        button {
+            background: linear-gradient(45deg, #FF0000 0%, #A9A9A9 100%);
+            color: #FFFFFF;
+            border: 2px solid #FFFFFF;
+            padding: 15px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(45deg, #A9A9A9 0%, #FF0000 100%);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        }
+        .result {
+            margin-top: 25px;
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #FF0000;
+            animation: fadeIn 1s ease-in;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .result p {
+            margin-bottom: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        .emoji {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        @media (max-width: 600px) {
+            .options {
+                grid-template-columns: 1fr;
+            }
+            header h1 {
+                font-size: 2em;
+            }
+            .intro, .quiz-container {
+                padding: 20px;
+                margin: 10px;
+            }
+        }
+        footer {
+            background-color: rgba(255, 255, 255, 0.9);
+            width: 100%;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #FF0000;
+            border-top: 3px solid #A9A9A9;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Quiz Interativo: Tipos de Pokémon</h1>
+    </header>
+    
+    <div class="intro">
+        <p>Teste seu conhecimento sobre vantagens e desvantagens entre os tipos de Pokémon! Responda às perguntas e veja sua pontuação ao final.</p>
+        <button onclick="startQuiz()">Começar Quiz</button>
+    </div>
+    
+    <div class="quiz-container hidden" id="quiz">
+        <div class="question" id="q1">
+            <p><span class="emoji">🔥</span>1. Qual tipo é forte contra o tipo Fogo?</p>
+            <div class="options">
+                <button onclick="selectAnswer(1, 'Planta')"><span class="emoji">🌿</span>Planta</button>
+                <button onclick="selectAnswer(1, 'Água')"><span class="emoji">💧</span>Água</button>
+                <button onclick="selectAnswer(1, 'Voador')"><span class="emoji">🦅</span>Voador</button>
+                <button onclick="selectAnswer(1, 'Elétrico')"><span class="emoji">⚡</span>Elétrico</button>
+            </div>
+        </div>
+        <div class="question hidden" id="q2">
+            <p><span class="emoji">⚡</span>2. Qual tipo é fraco contra o tipo Elétrico?</p>
+            <div class="options">
+                <button onclick="selectAnswer(2, 'Voador')"><span class="emoji">🦅</span>Voador</button>
+                <button onclick="selectAnswer(2, 'Pedra')"><span class="emoji">🪨</span>Pedra</button>
+                <button onclick="selectAnswer(2, 'Terra')"><span class="emoji">🌍</span>Terra</button>
+                <button onclick="selectAnswer(2, 'Psíquico')"><span class="emoji">🔮</span>Psíquico</button>
+            </div>
+        </div>
+        <div class="question hidden" id="q3">
+            <p><span class="emoji">🌿</span>3. O tipo Planta é fraco contra qual tipo?</p>
+            <div class="options">
+                <button onclick="selectAnswer(3, 'Fantasma')"><span class="emoji">👻</span>Fantasma</button>
+                <button onclick="selectAnswer(3, 'Gelo')"><span class="emoji">❄️</span>Gelo</button>
+                <button onclick="selectAnswer(3, 'Lutador')"><span class="emoji">👊</span>Lutador</button>
+                <button onclick="selectAnswer(3, 'Fada')"><span class="emoji">🧚</span>Fada</button>
+            </div>
+        </div>
+        <div class="question hidden" id="q4">
+            <p><span class="emoji">🌍</span>4. O tipo Terra é imune a qual tipo de ataque?</p>
+            <div class="options">
+                <button onclick="selectAnswer(4, 'Fogo')"><span class="emoji">🔥</span>Fogo</button>
+                <button onclick="selectAnswer(4, 'Voador')"><span class="emoji">🦅</span>Voador</button>
+                <button onclick="selectAnswer(4, 'Elétrico')"><span class="emoji">⚡</span>Elétrico</button>
+                <button onclick="selectAnswer(4, 'Dragão')"><span class="emoji">🐉</span>Dragão</button>
+            </div>
+        </div>
+        <div class="question hidden" id="q5">
+            <p><span class="emoji">🔮</span>5. Qual tipo é forte contra o tipo Psíquico?</p>
+            <div class="options">
+                <button onclick="selectAnswer(5, 'Água')"><span class="emoji">💧</span>Água</button>
+                <button onclick="selectAnswer(5, 'Inseto')"><span class="emoji">🐛</span>Inseto</button>
+                <button onclick="selectAnswer(5, 'Aço')"><span class="emoji">⚙️</span>Aço</button>
+                <button onclick="selectAnswer(5, 'Fada')"><span class="emoji">🧚</span>Fada</button>
+            </div>
+        </div>
+        <div class="question hidden" id="q6">
+            <p><span class="emoji">🐉</span>6. O tipo Dragão é fraco contra qual tipo?</p>
+            <div class="options">
+                <button onclick="selectAnswer(6, 'Gelo')"><span class="emoji">❄️</span>Gelo</button>
+                <button onclick="selectAnswer(6, 'Pedra')"><span class="emoji">🪨</span>Pedra</button>
+                <button onclick="selectAnswer(6, 'Lutador')"><span class="emoji">👊</span>Lutador</button>
+                <button onclick="selectAnswer(6, 'Venenoso')"><span class="emoji">🧪</span>Venenoso</button>
+            </div>
+        </div>
+        <div class="question hidden" id="q7">
+            <p><span class="emoji">🌑</span>7. Qual tipo é forte contra o tipo Sombrio (Dark)?</p>
+            <div class="options">
+                <button onclick="selectAnswer(7, 'Fada')"><span class="emoji">🧚</span>Fada</button>
+                <button onclick="selectAnswer(7, 'Planta')"><span class="emoji">🌿</span>Planta</button>
+                <button onclick="selectAnswer(7, 'Fogo')"><span class="emoji">🔥</span>Fogo</button>
+                <button onclick="selectAnswer(7, 'Normal')"><span class="emoji">🐾</span>Normal</button>
+            </div>
+        </div>
+        <div class="question hidden" id="q8">
+            <p><span class="emoji">❄️</span>8. O tipo Gelo tem vantagem contra qual tipo?</p>
+            <div class="options">
+                <button onclick="selectAnswer(8, 'Água')"><span class="emoji">💧</span>Água</button>
+                <button onclick="selectAnswer(8, 'Fogo')"><span class="emoji">🔥</span>Fogo</button>
+                <button onclick="selectAnswer(8, 'Voador')"><span class="emoji">🦅</span>Voador</button>
+                <button onclick="selectAnswer(8, 'Elétrico')"><span class="emoji">⚡</span>Elétrico</button>
+            </div>
+        </div>
+        <div class="question hidden" id="q9">
+            <p><span class="emoji">👊</span>9. Qual tipo é fraco contra o tipo Lutador?</p>
+            <div class="options">
+                <button onclick="selectAnswer(9, 'Normal')"><span class="emoji">🐾</span>Normal</button>
+                <button onclick="selectAnswer(9, 'Elétrico')"><span class="emoji">⚡</span>Elétrico</button>
+                <button onclick="selectAnswer(9, 'Dragão')"><span class="emoji">🐉</span>Dragão</button>
+                <button onclick="selectAnswer(9, 'Fantasma')"><span class="emoji">👻</span>Fantasma</button>
+            </div>
+        </div>
+        <div class="question hidden" id="q10">
+            <p><span class="emoji">🐾</span>10. Qual tipo é imune a ataques do tipo Normal?</p>
+            <div class="options">
+                <button onclick="selectAnswer(10, 'Pedra')"><span class="emoji">🪨</span>Pedra</button>
+                <button onclick="selectAnswer(10, 'Fantasma')"><span class="emoji">👻</span>Fantasma</button>
+                <button onclick="selectAnswer(10, 'Psíquico')"><span class="emoji">🔮</span>Psíquico</button>
+                <button onclick="selectAnswer(10, 'Aço')"><span class="emoji">⚙️</span>Aço</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="result hidden" id="result">
+        <p id="score"></p>
+        <button onclick="restartQuiz()">Reiniciar Quiz</button>
+    </div>
+
+    <footer>
+        © 2023 Quiz Pokémon. Baseado no universo oficial de Pokémon.
+    </footer>
+
+    <script>
+        let currentQuestion = 1;
+        let score = 0;
+        const answers = {
+            1: 'Água',
+            2: 'Voador',
+            3: 'Gelo',
+            4: 'Elétrico',
+            5: 'Inseto',
+            6: 'Gelo',
+            7: 'Fada',
+            8: 'Voador',
+            9: 'Normal',
+            10: 'Fantasma'
+        };
+
+        function startQuiz() {
+            document.querySelector('.intro').classList.add('hidden');
+            document.getElementById('quiz').classList.remove('hidden');
+        }
+
+        function selectAnswer(question, answer) {
+            if (answer === answers[question]) {
+                score++;
+            }
+            document.getElementById('q' + question).classList.add('hidden');
+            currentQuestion++;
+            if (currentQuestion <= 10) {
+                document.getElementById('q' + currentQuestion).classList.remove('hidden');
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('quiz').classList.add('hidden');
+            document.getElementById('result').classList.remove('hidden');
+            let message = `Você acertou ${score} de 10 perguntas! `;
+            if (score === 10) {
+                message += "Parabéns, Mestre Pokémon!";
+            } else if (score >= 7) {
+                message += "Excelente trabalho!";
+            } else if (score >= 5) {
+                message += "Bom trabalho!";
+            } else {
+                message += "Estude mais sobre os tipos!";
+            }
+            document.getElementById('score').textContent = message;
+        }
+
+        function restartQuiz() {
+            score = 0;
+            currentQuestion = 1;
+            document.getElementById('result').classList.add('hidden');
+            document.querySelector('.intro').classList.remove('hidden');
+            for (let i = 1; i <= 10; i++) {
+                document.getElementById('q' + i).classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
